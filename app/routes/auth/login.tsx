@@ -10,6 +10,7 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const { login, isAuthenticated, isLoading, isLoggingIn, error, clearError } =
     useAuth();
@@ -132,15 +133,29 @@ export default function Login() {
     setShowError(false);
   };
 
-  // Show loading spinner while checking authentication OR during login
-  if (isLoading || (isAuthenticated && isLoggingIn)) {
+  const handleRegisterClick = () => {
+    console.log("📱 Navigating to register...");
+    setIsNavigating(true);
+    clearAllErrors();
+    // Navigate with a small delay to show loading
+    setTimeout(() => {
+      navigate("/register");
+    }, 100);
+  };
+
+  // Show loading spinner while checking authentication OR during login OR navigating
+  if (isLoading || (isAuthenticated && isLoggingIn) || isNavigating) {
+    let loadingMessage = "Loading...";
+    if (isLoading) loadingMessage = "Checking authentication...";
+    else if (isAuthenticated && isLoggingIn)
+      loadingMessage = "Signing you in...";
+    else if (isNavigating) loadingMessage = "Loading page...";
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="text-gray-600">
-            {isLoading ? "Checking authentication..." : "Signing you in..."}
-          </p>
+          <p className="text-gray-600">{loadingMessage}</p>
         </div>
       </div>
     );
@@ -170,13 +185,13 @@ export default function Login() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="font-medium text-blue-600 hover:text-blue-500"
-              onClick={clearAllErrors}
+            <button
+              onClick={handleRegisterClick}
+              disabled={isNavigating}
+              className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create one here
-            </Link>
+              {isNavigating ? "Loading..." : "Create one here"}
+            </button>
           </p>
         </div>
 
@@ -298,7 +313,7 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="text-center space-y-2">
+          {/* <div className="text-center space-y-2">
             <p className="text-sm text-gray-500">
               <strong>Need to test?</strong>
             </p>
@@ -334,7 +349,7 @@ export default function Login() {
                 Clear errors
               </button>
             </div>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>

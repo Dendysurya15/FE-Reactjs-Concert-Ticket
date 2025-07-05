@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../lib/AuthContext";
+import { useToast } from "../../lib/ToastContext"; // Import the toast hook
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function Register() {
   }>({});
 
   const { register, isAuthenticated, isLoading, error, clearError } = useAuth();
+  const { showSuccess, showError } = useToast(); // Use toast
   const navigate = useNavigate();
 
   // Redirect if already authenticated
@@ -95,16 +97,31 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      await register({
+      const result = await register({
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
         age: parseInt(formData.age),
       });
-      // Navigation will be handled by useEffect when isAuthenticated changes
+
+      if (result.success) {
+        // Show success toast
+        showSuccess(
+          `Account created successfully! Welcome ${formData.name}! Please sign in with your new account.`,
+          6000
+        );
+
+        // Wait a moment, then redirect to login
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        // Show error toast
+        showError(result.error || "Registration failed. Please try again.");
+      }
     } catch (err) {
-      // Error is already handled by AuthContext
       console.error("Registration failed:", err);
+      showError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,7 +131,10 @@ export default function Register() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </div>
     );
   }

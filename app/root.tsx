@@ -12,6 +12,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import SiteHeader from "./components/siteHeader";
 import { AuthProvider, useAuth } from "./lib/AuthContext";
+import { ToastProvider } from "./lib/ToastContext"; // Import ToastProvider
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -55,7 +56,6 @@ function AppContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Conditionally render SiteHeader */}
       {isAuthenticated && !isAuthRoute && <SiteHeader />}
-
       <div className={isAuthenticated && !isAuthRoute ? "pt-16" : ""}>
         <Outlet />
       </div>
@@ -66,7 +66,9 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </AuthProvider>
   );
 }

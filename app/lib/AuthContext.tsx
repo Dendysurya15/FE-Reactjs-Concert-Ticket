@@ -19,11 +19,15 @@ interface AuthContextType {
   ) => Promise<{ success: boolean; error?: string }>;
   register: (
     userData: RegisterData
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{
+    success: boolean;
+    error?: string;
+    shouldRedirectToLogin?: boolean;
+  }>;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
-  isLoggingIn: boolean; // New: specifically for login process
+  isLoggingIn: boolean;
   error: string | null;
   clearError: () => void;
 }
@@ -56,8 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Initial auth check
-  const [isLoggingIn, setIsLoggingIn] = useState(false); // Login process
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // API base URL - matches your Go backend
@@ -118,8 +122,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      setError(null); // Clear previous errors
-      setIsLoggingIn(true); // Set login-specific loading
+      setError(null);
+      setIsLoggingIn(true);
 
       console.log("🔐 AuthContext: Starting login for:", email);
 
@@ -136,7 +140,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log("📡 AuthContext: Login response status:", response.status);
 
-      // Always try to parse response as JSON
       let data;
       try {
         data = await response.json();
@@ -148,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         const errorMessage = "Server returned invalid response";
         setError(errorMessage);
+        setIsLoggingIn(false);
         return { success: false, error: errorMessage };
       }
 
@@ -157,7 +161,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           response.status
         );
 
-        // Handle different error types with detailed messages
         let errorMessage = "Login failed";
 
         if (data?.error) {
@@ -190,10 +193,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
 
-        // Set the error and return failure - NO THROWING
         setError(errorMessage);
-        console.log("🔴 AuthContext: Returning error:", errorMessage);
-        setIsLoggingIn(false); // Clear loading state on error
+        setIsLoggingIn(false);
         return { success: false, error: errorMessage };
       }
 
@@ -207,15 +208,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Save token to localStorage
       localStorage.setItem("auth_token", loginData.token);
 
-      // Update state - this will trigger navigation
+      // Update state
       setToken(loginData.token);
       setUser(loginData.user);
       setError(null);
 
       console.log("✅ AuthContext: Login completed successfully");
-
-      // Keep isLoggingIn true briefly to prevent flash
-      // The component will handle navigation and clear this state
       return { success: true };
     } catch (err) {
       console.error("💥 AuthContext: Login error:", err);
@@ -223,21 +221,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const errorMessage =
         err instanceof Error ? err.message : "Login failed. Please try again.";
       setError(errorMessage);
-      console.log("🔴 AuthContext: Catch block error:", errorMessage);
-      setIsLoggingIn(false); // Clear loading state on error
+      setIsLoggingIn(false);
       return { success: false, error: errorMessage };
     } finally {
-      // Don't clear isLoggingIn here - let success/error paths handle it
       console.log("🏁 AuthContext: Login finally block");
     }
   };
 
   const register = async (
     userData: RegisterData
-  ): Promise<{ success: boolean; error?: string }> => {
+  ): Promise<{
+    success: boolean;
+    error?: string;
+    shouldRedirectToLogin?: boolean;
+  }> => {
     try {
-      setError(null); // Clear previous errors
-      setIsLoggingIn(true); // Use same loading state for consistency
+      setError(null);
+      setIsLoggingIn(true);
 
       console.log("📝 Attempting registration for:", userData.email);
 
@@ -259,6 +259,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("💥 Failed to parse response as JSON:", parseError);
         const errorMessage = "Server returned invalid response";
         setError(errorMessage);
+        setIsLoggingIn(false);
         return { success: false, error: errorMessage };
       }
 
@@ -295,24 +296,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         setError(errorMessage);
+        setIsLoggingIn(false);
         return { success: false, error: errorMessage };
       }
 
-      const registerData: LoginResponse = data;
-      console.log(
-        "✅ Registration successful for user:",
-        registerData.user.email
-      );
+      console.log("✅ Registration successful for user:", userData.email);
 
-      // Save token to localStorage
-      localStorage.setItem("auth_token", registerData.token);
-
-      // Update state
-      setToken(registerData.token);
-      setUser(registerData.user);
+      // DON'T save token or set user - just return success
+      // This allows the component to decide what to do next
       setError(null);
+      setIsLoggingIn(false);
 
-      return { success: true };
+      return {
+        success: true,
+        shouldRedirectToLogin: true,
+      };
     } catch (err) {
       console.error("💥 Registration error:", err);
 
@@ -321,9 +319,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           ? err.message
           : "Registration failed. Please try again.";
       setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
       setIsLoggingIn(false);
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -340,10 +337,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
   };
 
-  const clearLoginLoading = () => {
-    setIsLoggingIn(false);
-  };
-
   const value = {
     user,
     token,
@@ -355,7 +348,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isLoggingIn,
     error,
     clearError,
-    clearLoginLoading, // Export this for components to use
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
