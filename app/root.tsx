@@ -5,10 +5,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import SiteHeader from "./components/siteHeader";
+import { AuthProvider, useAuth } from "./lib/AuthContext";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -28,8 +31,44 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AppContent() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  // Define routes that shouldn't show the header (auth routes)
+  const authRoutes = ["/login", "/register"];
+  const isAuthRoute = authRoutes.includes(location.pathname);
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Conditionally render SiteHeader */}
+      {isAuthenticated && !isAuthRoute && <SiteHeader />}
+
+      <div className={isAuthenticated && !isAuthRoute ? "pt-16" : ""}>
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
-  return <Outlet />;
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -49,14 +88,33 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div>
+          <h1 className="text-6xl font-bold text-gray-900">{message}</h1>
+          <p className="mt-4 text-xl text-gray-600">{details}</p>
+        </div>
+
+        {stack && (
+          <div className="mt-8 text-left">
+            <h2 className="text-lg font-medium text-gray-900 mb-2">
+              Stack trace:
+            </h2>
+            <pre className="w-full p-4 overflow-x-auto bg-gray-100 rounded-md text-sm text-gray-800">
+              <code>{stack}</code>
+            </pre>
+          </div>
+        )}
+
+        <div className="mt-8">
+          <a
+            href="/"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Go back home
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
