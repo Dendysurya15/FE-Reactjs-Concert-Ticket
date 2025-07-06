@@ -1,32 +1,45 @@
-# Welcome to React Router!
+# FE ReactJS Web Concert Booking System
 
-A minimal template for experimenting with React Router v7.
+This project uses one of the Javascript libraries, ReactJS. This application has two roles, namely Admin and User. The function is of course to add and update the list of the latest concerts that will come. As for the User, booking simply logs into the system and orders concert tickets. This web is not integrated with any payment system.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/minimal)
+This application has the following features.
 
-> ![NOTE]
-> This template should not be used for production apps and is intended more for experimentation and demo applications. Please see the [default](https://github.com/remix-run/react-router-templates/tree/main/default) template for a more full-featured template.
+- Authentication with Token
+- Adding a new user with Register
+- Booking concert tickets with the role “User”
+- Can see the history per user of tickets that have been booked
+- Create and update data from users with the role “Admin”
 
-## Getting Started
+## Installation
 
-### Installation
+There are several stages of installation for this project as follows
 
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
+1. Run the following command to run the service from react js. The web can already be used to make ticket bookings
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+## Usage of Web Concert Booking System
 
----
+### Admin Role
 
-Built with ❤️ using React Router.
+1. Register new users and make edits to one of the u's directly through the mysql database in phpmyadmin, by changing the role to "Admin".
+
+2. Log in as the "Admin" role to add a new concert creation at the following link.
+
+```bash
+http://localhost:5173/dashboard/concerts/create
+```
+
+3. If there is an error, you can edit the concert at the following link by clicking the edit button
+
+```bash
+http://localhost:5173/dashboard/concerts
+```
+
+4. Admin can see the history of someone who booked a ticket by pressing the history menu
+
+```bash
+http://localhost:5173/dashboard/bookings
+```
