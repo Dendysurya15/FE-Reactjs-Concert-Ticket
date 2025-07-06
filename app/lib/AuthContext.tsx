@@ -5,6 +5,7 @@ interface User {
   name: string;
   email: string;
   age: number;
+  token: string;
   role: "admin" | "user";
   created_at: string;
   updated_at: string;
@@ -17,9 +18,7 @@ interface AuthContextType {
     email: string,
     password: string
   ) => Promise<{ success: boolean; error?: string }>;
-  register: (
-    userData: RegisterData
-  ) => Promise<{
+  register: (userData: RegisterData) => Promise<{
     success: boolean;
     error?: string;
     shouldRedirectToLogin?: boolean;
