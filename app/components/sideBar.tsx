@@ -47,10 +47,7 @@ export default function Sidebar({ children }: SidebarProps) {
     if (user?.role === "admin") {
       return [
         ...commonItems,
-        { name: "Concerts", href: "/dashboard/concerts", icon: "🎵" },
         { name: "Bookings", href: "/dashboard/bookings", icon: "🎫" },
-        { name: "Users", href: "/dashboard/users", icon: "👥" },
-        { name: "Analytics", href: "/dashboard/analytics", icon: "📈" },
       ];
     } else {
       return [

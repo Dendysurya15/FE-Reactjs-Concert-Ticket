@@ -3,7 +3,7 @@ import { useAuth } from "../../lib/AuthContext";
 import { useToast } from "../../lib/ToastContext";
 import ConcertCard, {
   ConcertCardSkeleton,
-} from "../../components/concert/concertCard";
+} from "../../components/concert/ConcertCard";
 import SearchFilter from "../../components/concert/SearchFilter";
 
 interface Concert {

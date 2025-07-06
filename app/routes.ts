@@ -16,6 +16,9 @@ export default [
   // Dashboard
   route("dashboard", "routes/dashboard/index.tsx"),
 
+  // Admin bookings management
+  route("dashboard/bookings", "routes/bookings/index.tsx"),
+
   // Concert routes - separate files to avoid duplicate route IDs
   route("concerts/create", "routes/concerts/create.tsx"),
   route("concerts/:id/edit", "routes/concerts/edit.tsx"),

@@ -33,14 +33,24 @@ export default function EditConcert() {
 
     const fetchConcert = async () => {
       try {
-        const response = await fetch(`/api/concerts/${id}`, {
+        // Debug: Log the URL being called
+        const url = `http://localhost:3000/concerts/${id}`; // Use full URL like in the form
+        console.log("Fetching concert from:", url);
+        console.log("User token:", user.token ? "Token exists" : "No token");
+
+        const response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${user.token}`, // Adjust based on your auth implementation
           },
         });
 
+        console.log("Response status:", response.status);
+        console.log("Response ok:", response.ok);
+
         if (response.ok) {
           const concertData = await response.json();
+          console.log("Concert data received:", concertData);
+
           // Convert Go time format to JavaScript format if needed
           const formattedConcert: Concert = {
             ...concertData,
@@ -53,11 +63,13 @@ export default function EditConcert() {
           };
           setConcert(formattedConcert);
         } else {
-          setError("Failed to fetch concert data");
+          const errorText = await response.text();
+          console.log("Error response:", errorText);
+          setError(`Failed to fetch concert data: ${response.status}`);
         }
       } catch (err) {
+        console.error("Fetch error:", err);
         setError("Error fetching concert data");
-        console.error("Error fetching concert:", err);
       } finally {
         setLoading(false);
       }
@@ -108,7 +120,7 @@ export default function EditConcert() {
 
   const handleSaveConcert = async (updatedConcert: Concert) => {
     try {
-      const response = await fetch(`/api/concerts/${id}`, {
+      const response = await fetch(`http://localhost:3000/concerts/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -159,7 +171,6 @@ export default function EditConcert() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <ConcertForm
             concert={concert}
-            isOpen={true}
             onSave={handleSaveConcert}
             onCancel={handleCancel}
           />
