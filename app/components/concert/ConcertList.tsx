@@ -33,11 +33,13 @@ interface ConcertsResponse {
 interface ConcertsListProps {
   onCreateConcert?: () => void;
   onEditConcert?: (concert: Concert) => void;
+  onBookConcert?: (concert: Concert) => void;
 }
 
 export default function ConcertsList({
   onCreateConcert,
   onEditConcert,
+  onBookConcert,
 }: ConcertsListProps) {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
@@ -191,8 +193,12 @@ export default function ConcertsList({
 
   // Book concert (user only)
   const handleBookConcert = (concert: Concert) => {
-    console.log("Book concert:", concert.id);
-    showSuccess(`Booking for ${concert.name} - Feature coming soon!`);
+    if (onBookConcert) {
+      onBookConcert(concert); // ✅ Use the prop function instead of showing toast
+    } else {
+      console.log("Book concert:", concert.id);
+      showSuccess(`Booking for ${concert.name} - Feature coming soon!`);
+    }
   };
 
   if (!user) {
