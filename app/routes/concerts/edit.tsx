@@ -161,13 +161,6 @@ export default function EditConcert() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Edit Concert</h1>
-          <p className="text-gray-600 mt-2">
-            Update the concert details below.
-          </p>
-        </div>
-
         <div className="bg-white rounded-lg shadow-md p-6">
           <ConcertForm
             concert={concert}

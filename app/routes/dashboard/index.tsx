@@ -35,11 +35,11 @@ export default function Dashboard() {
   }
 
   const handleCreateConcert = () => {
-    navigate("/concerts/create");
+    navigate("/dashboard/concerts/create");
   };
 
   const handleEditConcert = (concert: Concert) => {
-    navigate(`/concerts/${concert.id}/edit`);
+    navigate(`/dashboard/concerts/${concert.id}/edit`);
   };
 
   return (
