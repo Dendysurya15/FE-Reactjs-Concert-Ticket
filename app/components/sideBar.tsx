@@ -52,8 +52,6 @@ export default function Sidebar({ children }: SidebarProps) {
     } else {
       return [
         ...commonItems,
-        { name: "Browse Concerts", href: "/dashboard/concerts", icon: "🎵" },
-        { name: "My Bookings", href: "/dashboard/bookings", icon: "🎫" },
         { name: "History", href: "/dashboard/history", icon: "📋" },
       ];
     }

@@ -18,10 +18,10 @@ export default [
   // Admin bookings management
   route("dashboard/bookings", "routes/bookings/index.tsx"),
 
+  // User history - separate file that imports the same component
+  route("dashboard/history", "routes/history/index.tsx"),
+
   // Concert routes - now under dashboard
   route("dashboard/concerts/create", "routes/concerts/create.tsx"),
   route("dashboard/concerts/:id/edit", "routes/concerts/edit.tsx"),
-
-  // 404 page
-  // route("*", "routes/404.tsx"),
 ] satisfies RouteConfig;
