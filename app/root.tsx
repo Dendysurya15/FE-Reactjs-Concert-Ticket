@@ -10,9 +10,9 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import SiteHeader from "./components/siteHeader";
+import UnifiedSidebar from "./components/sideBar";
 import { AuthProvider, useAuth } from "./lib/AuthContext";
-import { ToastProvider } from "./lib/ToastContext"; // Import ToastProvider
+import { ToastProvider } from "./lib/ToastContext";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,9 +36,10 @@ function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // Define routes that shouldn't show the header (auth routes)
+  // Define routes that don't need sidebar (auth routes)
   const authRoutes = ["/login", "/register"];
   const isAuthRoute = authRoutes.includes(location.pathname);
+  const isDashboardRoute = location.pathname.startsWith("/dashboard");
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -52,13 +53,28 @@ function AppContent() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Conditionally render SiteHeader */}
-      {isAuthenticated && !isAuthRoute && <SiteHeader />}
-      <div className={isAuthenticated && !isAuthRoute ? "pt-16" : ""}>
+  // Auth routes (login/register) - no sidebar
+  if (isAuthRoute || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50">
         <Outlet />
       </div>
+    );
+  }
+
+  // Dashboard routes - use unified sidebar for ALL authenticated users
+  if (isAuthenticated && isDashboardRoute) {
+    return (
+      <UnifiedSidebar>
+        <Outlet />
+      </UnifiedSidebar>
+    );
+  }
+
+  // Other authenticated routes (if any)
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Outlet />
     </div>
   );
 }
