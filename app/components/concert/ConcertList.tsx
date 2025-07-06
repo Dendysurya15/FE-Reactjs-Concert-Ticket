@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../lib/AuthContext";
 import { useToast } from "../../lib/ToastContext";
 import ConcertCard, {
   ConcertCardSkeleton,
 } from "../../components/concert/ConcertCard";
-import SearchFilter from "../../components/concert/SearchFilter";
+import Search from "../../components/concert/SearchFilter"; // Adjust path as needed
 
 interface Concert {
   id: number;
@@ -47,104 +47,150 @@ export default function ConcertsList({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
-
-  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState({ start: "", end: "" });
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("event_date");
+  const [isSearching, setIsSearching] = useState(false);
 
   const { user, token } = useAuth();
   const { showSuccess, showError } = useToast();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const API_BASE_URL = "http://localhost:3000";
 
-  // Fetch concerts with filters
+  // Fetch concerts with search support
   const fetchConcerts = useCallback(
-    async (pageNum: number = 1, append: boolean = false) => {
+    async (
+      pageNum: number = 1,
+      append: boolean = false,
+      search: string = ""
+    ) => {
+      console.log("📡 fetchConcerts called with:", { pageNum, append, search });
+      console.log("📡 API_BASE_URL:", API_BASE_URL);
+      console.log("📡 token exists:", !!token);
+
       try {
+        // Cancel previous request if exists
+        if (abortControllerRef.current) {
+          console.log("📡 Aborting previous request");
+          abortControllerRef.current.abort();
+        }
+
+        // Create new abort controller
+        abortControllerRef.current = new AbortController();
+
         if (pageNum === 1) {
-          setLoading(true);
+          if (search.trim()) {
+            console.log("📡 Setting isSearching to true");
+            setIsSearching(true);
+          } else {
+            console.log("📡 Setting loading to true");
+            setLoading(true);
+          }
         } else {
+          console.log("📡 Setting loadingMore to true");
           setLoadingMore(true);
         }
 
         const params = new URLSearchParams({
           page: pageNum.toString(),
           limit: "12",
-          ...(searchQuery && { search: searchQuery }),
-          ...(dateRange.start && { start_date: dateRange.start }),
-          ...(dateRange.end && { end_date: dateRange.end }),
-          ...(statusFilter !== "all" && { status: statusFilter }),
-          ...(sortBy && { sort_by: sortBy }),
+          sort_by: "event_date",
         });
 
-        const response = await fetch(`${API_BASE_URL}/concerts?${params}`, {
+        // Add search query if provided
+        if (search.trim()) {
+          params.append("search", search.trim());
+          console.log("📡 Added search param:", search.trim());
+        }
+
+        const url = `${API_BASE_URL}/concerts?${params}`;
+        console.log("📡 Making request to:", url);
+
+        const response = await fetch(url, {
           headers: {
             "Content-Type": "application/json",
             ...(token && { Authorization: `Bearer ${token}` }),
           },
+          signal: abortControllerRef.current.signal,
         });
 
+        console.log("📡 Response status:", response.status);
+        console.log("📡 Response ok:", response.ok);
+
         if (!response.ok) {
-          throw new Error("Failed to fetch concerts");
+          throw new Error(
+            `Failed to fetch concerts: ${response.status} ${response.statusText}`
+          );
         }
 
         const result: ConcertsResponse = await response.json();
 
+        console.log("📡 API Response:", result);
+        console.log("📡 Found concerts count:", result.data.length);
+        console.log("📡 Total available:", result.total);
+
         if (append) {
+          console.log("📡 Appending to existing concerts");
           setConcerts((prev) => [...prev, ...result.data]);
         } else {
+          console.log("📡 Replacing concerts list");
           setConcerts(result.data);
         }
 
         setTotal(result.total);
         setHasMore(result.has_next);
         setPage(pageNum);
+
+        console.log("📡 State updated successfully");
       } catch (error) {
-        console.error("Error fetching concerts:", error);
+        if (error instanceof Error && error.name === "AbortError") {
+          console.log("📡 Request was aborted");
+          return;
+        }
+        console.error("📡 Error fetching concerts:", error);
         showError("Failed to load concerts. Please try again.");
       } finally {
+        console.log("📡 Cleaning up loading states");
         setLoading(false);
         setLoadingMore(false);
+        setIsSearching(false);
       }
     },
-    [searchQuery, dateRange, statusFilter, sortBy, token, showError]
+    [token, showError]
   );
 
-  // Initial load
+  // Handle search with debounce
+  const handleSearch = useCallback(
+    (query: string) => {
+      console.log("🎯 handleSearch called with query:", query);
+      console.log("🎯 Current searchQuery state:", searchQuery);
+      console.log("🎯 Current concerts count:", concerts.length);
+
+      setSearchQuery(query);
+
+      // Reset pagination
+      setPage(1);
+      setHasMore(true);
+
+      console.log("🎯 About to call fetchConcerts with query:", query);
+
+      // Fetch new results
+      fetchConcerts(1, false, query);
+    },
+    [fetchConcerts, searchQuery, concerts.length]
+  );
+
+  // Initial load - only run once
   useEffect(() => {
-    fetchConcerts(1, false);
-  }, [fetchConcerts]);
-
-  // Search handler
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setPage(1);
-  };
-
-  // Filter handlers
-  const handleDateFilter = (startDate: string, endDate: string) => {
-    setDateRange({ start: startDate, end: endDate });
-    setPage(1);
-  };
-
-  const handleStatusFilter = (status: string) => {
-    setStatusFilter(status);
-    setPage(1);
-  };
-
-  const handleSortBy = (sort: string) => {
-    setSortBy(sort);
-    setPage(1);
-  };
+    console.log("🚀 Initial load useEffect running");
+    fetchConcerts(1, false, "");
+  }, []);
 
   // Load more concerts
-  const loadMore = () => {
-    if (hasMore && !loadingMore) {
-      fetchConcerts(page + 1, true);
+  const loadMore = useCallback(() => {
+    if (hasMore && !loadingMore && !loading) {
+      fetchConcerts(page + 1, true, searchQuery);
     }
-  };
+  }, [hasMore, loadingMore, loading, page, searchQuery, fetchConcerts]);
 
   // Infinite scroll effect
   useEffect(() => {
@@ -154,7 +200,8 @@ export default function ConcertsList({
           document.documentElement.offsetHeight - 1000 &&
         hasMore &&
         !loadingMore &&
-        !loading
+        !loading &&
+        !isSearching
       ) {
         loadMore();
       }
@@ -162,7 +209,16 @@ export default function ConcertsList({
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore, loadingMore, loading, page]);
+  }, [hasMore, loadingMore, loading, isSearching, loadMore]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   // Delete concert (admin only)
   const handleDeleteConcert = async (id: number) => {
@@ -194,11 +250,18 @@ export default function ConcertsList({
   // Book concert (user only)
   const handleBookConcert = (concert: Concert) => {
     if (onBookConcert) {
-      onBookConcert(concert); // ✅ Use the prop function instead of showing toast
+      onBookConcert(concert);
     } else {
       console.log("Book concert:", concert.id);
       showSuccess(`Booking for ${concert.name} - Feature coming soon!`);
     }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setPage(1);
+    setHasMore(true);
+    fetchConcerts(1, false, "");
   };
 
   if (!user) {
@@ -218,13 +281,8 @@ export default function ConcertsList({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {user.role === "admin" ? "Manage Concerts" : "Browse Concerts"}
+            {user.role === "admin" ? "Manage Concerts" : "Concerts"}
           </h1>
-          <p className="text-gray-600">
-            {total > 0
-              ? `${total} concert${total !== 1 ? "s" : ""} found`
-              : "No concerts found"}
-          </p>
         </div>
 
         {/* Add Concert Button (Admin Only) */}
@@ -239,14 +297,63 @@ export default function ConcertsList({
         )}
       </div>
 
-      {/* Search and Filters */}
-      <SearchFilter
-        onSearch={handleSearch}
-        onFilterDate={handleDateFilter}
-        onFilterStatus={handleStatusFilter}
-        onSortBy={handleSortBy}
-        loading={loading}
-      />
+      {/* Search Component */}
+      <div className="max-w-md">
+        <Search
+          onSearch={(query) => {
+            console.log(
+              "🔄 Search component onSearch prop called with:",
+              query
+            );
+            handleSearch(query);
+          }}
+          placeholder="Search concerts by name, place, or description..."
+          debounceMs={500}
+          className="w-full"
+        />
+      </div>
+
+      {/* Search Results Info */}
+      {searchQuery && (
+        <div className="text-sm text-gray-600 flex items-center gap-2">
+          {isSearching ? (
+            <div className="flex items-center gap-2">
+              <svg
+                className="animate-spin h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              Searching...
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span>
+                Found {total} result{total !== 1 ? "s" : ""} for "{searchQuery}"
+              </span>
+              <button
+                onClick={handleClearSearch}
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Concert Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -273,31 +380,42 @@ export default function ConcertsList({
       </div>
 
       {/* Empty State */}
-      {!loading && concerts.length === 0 && (
+      {!loading && !isSearching && concerts.length === 0 && (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎵</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No concerts found
+            {searchQuery ? "No concerts found" : "No concerts available"}
           </h3>
           <p className="text-gray-600 mb-6">
-            {searchQuery || dateRange.start || statusFilter !== "all"
-              ? "Try adjusting your search filters"
+            {searchQuery
+              ? `No concerts match your search "${searchQuery}"`
               : "No concerts are currently available"}
           </p>
-          {user.role === "admin" && onCreateConcert && (
+          {searchQuery ? (
             <button
-              onClick={onCreateConcert}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleClearSearch}
+              className="inline-flex items-center px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
             >
-              <span className="mr-2">➕</span>
-              Create First Concert
+              <span className="mr-2">🔍</span>
+              Show All Concerts
             </button>
+          ) : (
+            user.role === "admin" &&
+            onCreateConcert && (
+              <button
+                onClick={onCreateConcert}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <span className="mr-2">➕</span>
+                Create First Concert
+              </button>
+            )
           )}
         </div>
       )}
 
       {/* Load More Button */}
-      {!loading && hasMore && concerts.length > 0 && (
+      {!loading && !isSearching && hasMore && concerts.length > 0 && (
         <div className="text-center">
           <button
             onClick={loadMore}
@@ -323,7 +441,7 @@ export default function ConcertsList({
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
                 Loading more...
               </>
@@ -335,9 +453,10 @@ export default function ConcertsList({
       )}
 
       {/* Footer Info */}
-      {concerts.length > 0 && (
+      {concerts.length > 0 && !isSearching && (
         <div className="text-center text-sm text-gray-500">
           Showing {concerts.length} of {total} concerts
+          {searchQuery && ` matching "${searchQuery}"`}
         </div>
       )}
     </div>
