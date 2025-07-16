@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { CheckCircle, XCircle, AlertCircle, Info, X } from "lucide-react";
 
 interface Toast {
   id: string;
@@ -95,30 +96,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   const getToastIcon = (type: Toast["type"]) => {
     switch (type) {
       case "success":
-        return "✅";
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
       case "error":
-        return "❌";
+        return <XCircle className="w-5 h-5 text-red-500" />;
       case "warning":
-        return "⚠️";
+        return <AlertCircle className="w-5 h-5 text-orange-500" />;
       case "info":
-        return "ℹ️";
+        return <Info className="w-5 h-5 text-blue-500" />;
       default:
-        return "ℹ️";
-    }
-  };
-
-  const getToastColors = (type: Toast["type"]) => {
-    switch (type) {
-      case "success":
-        return "bg-green-50 border-green-200 text-green-800";
-      case "error":
-        return "bg-red-50 border-red-200 text-red-800";
-      case "warning":
-        return "bg-yellow-50 border-yellow-200 text-yellow-800";
-      case "info":
-        return "bg-blue-50 border-blue-200 text-blue-800";
-      default:
-        return "bg-gray-50 border-gray-200 text-gray-800";
+        return <Info className="w-5 h-5 text-blue-500" />;
     }
   };
 
@@ -127,28 +113,28 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
 
       {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <div className="fixed top-4 right-4 z-50 space-y-3">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`max-w-sm rounded-lg border p-4 shadow-lg transition-all duration-300 ease-in-out transform animate-in slide-in-from-right ${getToastColors(
-              toast.type
-            )}`}
+            className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-lg p-4 transition-all duration-300 ease-in-out transform animate-in slide-in-from-right"
           >
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <span className="text-lg">{getToastIcon(toast.type)}</span>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                {getToastIcon(toast.type)}
               </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium">{toast.message}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 leading-5">
+                  {toast.message}
+                </p>
               </div>
-              <div className="ml-4 flex-shrink-0">
+              <div className="flex-shrink-0 ml-2">
                 <button
                   onClick={() => removeToast(toast.id)}
-                  className="inline-flex rounded-md p-1.5 hover:bg-black hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className="inline-flex rounded-md p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors"
                 >
                   <span className="sr-only">Dismiss</span>
-                  <span className="text-sm">✕</span>
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>

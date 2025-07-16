@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Eye, EyeOff, Home } from "lucide-react";
+import { useNavigate } from "react-router";
 import { useAuth } from "../../lib/AuthContext";
 
 export default function Login() {
@@ -11,7 +12,18 @@ export default function Login() {
   const [localError, setLocalError] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const images = [
+    "https://picsum.photos/800/1200?random=1",
+    "https://picsum.photos/800/1200?random=2",
+    "https://picsum.photos/800/1200?random=3",
+  ];
+
+  // Real authentication hooks
   const { login, isAuthenticated, isLoading, isLoggingIn, error, clearError } =
     useAuth();
   const navigate = useNavigate();
@@ -26,6 +38,16 @@ export default function Login() {
       }, 100);
     }
   }, [isAuthenticated, isLoading, navigate]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 10000); // Change image every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   // Handle error persistence - combine local and context errors
   const displayError = localError || error;
@@ -68,7 +90,7 @@ export default function Login() {
         console.log("❌ Validation failed: Email required");
         setLocalError("Email is required");
         setShowError(true);
-        setIsSubmitting(false); // Clear loading state
+        setIsSubmitting(false);
         return;
       }
 
@@ -76,7 +98,7 @@ export default function Login() {
         console.log("❌ Validation failed: Password required");
         setLocalError("Password is required");
         setShowError(true);
-        setIsSubmitting(false); // Clear loading state
+        setIsSubmitting(false);
         return;
       }
 
@@ -84,7 +106,7 @@ export default function Login() {
         console.log("❌ Validation failed: Invalid email");
         setLocalError("Please enter a valid email address");
         setShowError(true);
-        setIsSubmitting(false); // Clear loading state
+        setIsSubmitting(false);
         return;
       }
 
@@ -92,14 +114,14 @@ export default function Login() {
         console.log("❌ Validation failed: Password too short");
         setLocalError("Password must be at least 6 characters");
         setShowError(true);
-        setIsSubmitting(false); // Clear loading state
+        setIsSubmitting(false);
         return;
       }
 
       console.log("✅ Client validation passed");
       console.log("🔐 Attempting login for:", formData.email);
 
-      // Call login
+      // Call login with real auth context
       console.log("🔄 Calling login...");
       const result = await login(formData.email.trim(), formData.password);
 
@@ -174,80 +196,95 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto h-12 w-12 flex items-center justify-center bg-blue-100 rounded-full">
-            <span className="text-2xl">🎵</span>
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* Left side - Image slideshow */}
+      <div className="hidden lg:block relative bg-gradient-to-br from-blue-400 to-blue-600">
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ease-in-out ${
+              index === currentIndex ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              backgroundImage: `url('${image}')`,
+            }}
+          />
+        ))}
+
+        {/* Subtle overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-gray-600/20" />
+
+        {/* Logo */}
+        <div className="absolute top-8 left-8 flex items-center space-x-2 text-white">
+          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <Home className="w-5 h-5 text-blue-600" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to Concert Tickets
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <button
-              onClick={handleRegisterClick}
-              disabled={isNavigating}
-              className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isNavigating ? "Loading..." : "Create one here"}
-            </button>
+          <div>
+            <div className="font-bold text-lg">American</div>
+            <div className="text-sm">Realtor</div>
+          </div>
+        </div>
+
+        {/* Bottom text */}
+        <div className="absolute bottom-12 left-8 text-white">
+          <h1 className="text-4xl font-bold mb-2">Find Your Sweet Home</h1>
+          <p className="text-lg opacity-90">
+            Schedule visit just a few clicks, visit in just a few clicks
           </p>
         </div>
 
-        <form
-          className="mt-8 space-y-6"
-          onSubmit={handleSubmit}
-          noValidate
-          action="#"
-        >
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                disabled={isSubmitting || isLoggingIn}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
+        {/* Dots indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {images.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex ? "bg-white" : "bg-white/50"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                disabled={isSubmitting || isLoggingIn}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-              />
+      {/* Right side - Login form */}
+      <div className="flex items-center justify-center p-8 bg-gray-50">
+        <div className="w-full max-w-md">
+          {/* Mobile logo (shown only on small screens) */}
+          <div className="lg:hidden flex items-center justify-center space-x-2 mb-8">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <Home className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-blue-600">
+              <div className="font-bold text-lg">American</div>
+              <div className="text-sm">Realtor</div>
             </div>
           </div>
 
-          {/* Persistent Error Display */}
+          {/* Sign In button (top right) */}
+
+          {/* Welcome text */}
+          <div className="text-center lg:text-left mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Welcome Back to
+            </h2>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              American Realtors!
+            </h1>
+            <p className="text-gray-600">
+              Don't have an account?{" "}
+              <button
+                onClick={handleRegisterClick}
+                disabled={isNavigating}
+                className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isNavigating ? "Loading..." : "Register"}
+              </button>
+            </p>
+          </div>
+
+          {/* Error Display */}
           {(displayError || showError) && (
-            <div className="rounded-md bg-red-50 p-4 border border-red-200">
+            <div className="mb-6 rounded-md bg-red-50 p-4 border border-red-200">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <span className="text-red-400 text-lg">⚠️</span>
@@ -272,7 +309,86 @@ export default function Login() {
             </div>
           )}
 
-          <div>
+          {/* Login form */}
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium  text-gray-700 mb-2"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                disabled={isSubmitting || isLoggingIn}
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  disabled={isSubmitting || isLoggingIn}
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={isSubmitting || isLoggingIn}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={isSubmitting || isLoggingIn}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <label
+                  htmlFor="remember"
+                  className="ml-2 block text-sm text-gray-700"
+                >
+                  Remember Me
+                </label>
+              </div>
+              <button
+                type="button"
+                disabled={isSubmitting || isLoggingIn}
+                className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             <button
               type="submit"
               disabled={
@@ -281,7 +397,7 @@ export default function Login() {
                 !formData.email ||
                 !formData.password
               }
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
             >
               {isSubmitting || isLoggingIn ? (
                 <span className="flex items-center">
@@ -308,12 +424,13 @@ export default function Login() {
                   {isLoggingIn ? "Signing in..." : "Processing..."}
                 </span>
               ) : (
-                "Sign in"
+                "Log In"
               )}
             </button>
-          </div>
+          </form>
 
-          {/* <div className="text-center space-y-2">
+          {/* Test data helper (uncomment for development) */}
+          {/* <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-500">
               <strong>Need to test?</strong>
             </p>
@@ -350,7 +467,7 @@ export default function Login() {
               </button>
             </div>
           </div> */}
-        </form>
+        </div>
       </div>
     </div>
   );
