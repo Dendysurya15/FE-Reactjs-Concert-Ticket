@@ -2,6 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "../lib/AuthContext";
 import { useToast } from "../lib/ToastContext";
+import {
+  Home,
+  BarChart3,
+  Ticket,
+  History,
+  Menu,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  User,
+  LogOut,
+} from "lucide-react";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -9,7 +22,7 @@ interface SidebarProps {
 
 export default function Sidebar({ children }: SidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarVisible, setSidebarVisible] = useState(true); // New: controls if sidebar exists at all
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,17 +55,23 @@ export default function Sidebar({ children }: SidebarProps) {
 
   // Get navigation items based on role
   const getNavigationItems = () => {
-    const commonItems = [{ name: "Dashboard", href: "/dashboard", icon: "📊" }];
+    const commonItems = [
+      {
+        name: "Dashboard",
+        href: "/dashboard",
+        icon: BarChart3,
+      },
+    ];
 
     if (user?.role === "admin") {
       return [
         ...commonItems,
-        { name: "Bookings", href: "/dashboard/bookings", icon: "🎫" },
+        { name: "Bookings", href: "/dashboard/bookings", icon: Ticket },
       ];
     } else {
       return [
         ...commonItems,
-        { name: "History", href: "/dashboard/history", icon: "📋" },
+        { name: "History", href: "/dashboard/history", icon: History },
       ];
     }
   };
@@ -97,33 +116,29 @@ export default function Sidebar({ children }: SidebarProps) {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Mobile sidebar overlay - TRANSPARENT or very light */}
+    <div className="flex h-screen bg-gray-50">
+      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         >
-          {/* Remove the overlay div completely OR make it super transparent */}
-          {/* <div className="fixed inset-0 bg-transparent"></div> */}
+          <div className="fixed inset-0 bg-black bg-opacity-25"></div>
         </div>
       )}
 
-      {/* Sidebar - PUSHES content on desktop, overlays on mobile */}
+      {/* Sidebar */}
       <div
-        className={`bg-white shadow-lg transition-all duration-300 ease-in-out ${
-          // Desktop: always visible if sidebarVisible, pushes content
+        className={`bg-white shadow-xl transition-all duration-300 ease-in-out border-r border-gray-100 ${
           sidebarVisible
             ? "lg:w-64 lg:static lg:translate-x-0"
             : "lg:w-0 lg:static lg:translate-x-0"
         } ${
-          // Mobile: fixed overlay
           sidebarOpen
             ? "fixed inset-y-0 left-0 z-50 w-64 translate-x-0"
             : "fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0"
         }`}
       >
-        {/* Only show content if sidebar should be visible */}
         <div
           className={`flex flex-col h-full transition-opacity duration-300 ${
             sidebarVisible
@@ -132,21 +147,21 @@ export default function Sidebar({ children }: SidebarProps) {
           }`}
         >
           {/* Sidebar header */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-white">
+          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-100 bg-white">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">🎵</span>
+              <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
+                <Home className="w-4 h-4 text-white" />
               </div>
               <div
                 className={`transition-all duration-300 overflow-hidden ${
                   sidebarVisible ? "opacity-100 w-auto" : "opacity-0 w-0"
                 }`}
               >
-                <h2 className="text-lg font-semibold text-gray-900 whitespace-nowrap">
-                  Concert Hub
+                <h2 className="text-lg font-bold text-gray-900 whitespace-nowrap">
+                  American
                 </h2>
-                <p className="text-xs text-gray-500 whitespace-nowrap">
-                  {user.role === "admin" ? "Admin Panel" : ""}
+                <p className="text-xs text-gray-500 whitespace-nowrap -mt-1">
+                  Realtor {user.role === "admin" ? "Admin" : ""}
                 </p>
               </div>
             </div>
@@ -154,121 +169,96 @@ export default function Sidebar({ children }: SidebarProps) {
             {/* Hide sidebar button (desktop) */}
             <button
               onClick={() => setSidebarVisible(false)}
-              className="hidden lg:block p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors duration-200"
+              className="hidden lg:block p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
               title="Hide sidebar"
             >
-              <svg
-                className="h-5 w-5 transition-transform duration-200"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-                />
-              </svg>
+              <ChevronLeft className="h-4 w-4" />
             </button>
 
             {/* Close button (mobile) */}
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors duration-200"
+              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="h-5 w-5" />
             </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
-            {navigationItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => {
-                  navigate(item.href);
-                  setSidebarOpen(false);
-                }}
-                className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isCurrentPath(item.href)
-                    ? "bg-blue-100 text-blue-700 border-r-2 border-blue-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <span className="text-lg mr-3">{item.icon}</span>
-                <span>{item.name}</span>
-              </button>
-            ))}
+          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            {navigationItems.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    navigate(item.href);
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
+                    isCurrentPath(item.href)
+                      ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  <IconComponent
+                    className={`w-5 h-5 mr-3 transition-colors duration-200 ${
+                      isCurrentPath(item.href)
+                        ? "text-blue-700"
+                        : "text-gray-400 group-hover:text-gray-600"
+                    }`}
+                  />
+                  <span>{item.name}</span>
+                </button>
+              );
+            })}
           </nav>
 
           {/* User section */}
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="p-4 border-t border-gray-100 bg-gray-50/50">
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="w-full flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                className="w-full flex items-center space-x-3 p-3 text-sm rounded-xl hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 border border-transparent hover:border-gray-100"
               >
                 {/* User avatar */}
-                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 shadow-md">
                   {getUserInitials(user.name)}
                 </div>
 
                 {/* User info */}
                 <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-semibold text-gray-900 truncate">
                     {user.name}
                   </p>
                   <p className="text-xs text-gray-500 truncate">{user.email}</p>
                 </div>
 
                 {/* Dropdown arrow */}
-                <svg
+                <ChevronDown
                   className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
                     userDropdownOpen ? "rotate-180" : ""
                   }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                />
               </button>
 
               {/* Dropdown menu */}
               {userDropdownOpen && (
-                <div className="absolute bottom-full mb-2 left-0 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200 origin-bottom">
-                  <div className="py-1">
+                <div className="absolute bottom-full mb-2 left-0 w-full rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200 origin-bottom border border-gray-100">
+                  <div className="py-2">
                     <button
                       onClick={handleProfile}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2 transition-colors duration-200"
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-200 rounded-lg mx-2"
                     >
-                      <span>👤</span>
+                      <User className="w-4 h-4 text-gray-400" />
                       <span>Profile</span>
                     </button>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2 transition-colors duration-200"
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-200 rounded-lg mx-2"
                     >
-                      <span>🚪</span>
+                      <LogOut className="w-4 h-4 text-gray-400" />
                       <span>Logout</span>
                     </button>
                   </div>
@@ -279,51 +269,27 @@ export default function Sidebar({ children }: SidebarProps) {
         </div>
       </div>
 
-      {/* Main content area - Gets pushed by sidebar on desktop */}
+      {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Top bar with breadcrumbs and mobile menu */}
-        <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6">
+        <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-6 shadow-sm">
           <div className="flex items-center space-x-4">
-            {/* Mobile hamburger (always visible on mobile) */}
+            {/* Mobile hamburger */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors duration-200"
+              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <Menu className="h-5 w-5" />
             </button>
 
-            {/* Show sidebar button (desktop - only when sidebar is hidden) */}
+            {/* Show sidebar button (desktop) */}
             {!sidebarVisible && (
               <button
                 onClick={() => setSidebarVisible(true)}
-                className="hidden lg:block p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all duration-200"
+                className="hidden lg:block p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
                 title="Show sidebar"
               >
-                <svg
-                  className="h-6 w-6 transition-transform duration-200 hover:scale-110"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <ChevronRight className="h-5 w-5" />
               </button>
             )}
 
@@ -333,25 +299,13 @@ export default function Sidebar({ children }: SidebarProps) {
                 {breadcrumbs.map((breadcrumb, index) => (
                   <li key={breadcrumb.href} className="flex items-center">
                     {index > 0 && (
-                      <svg
-                        className="h-4 w-4 text-gray-400 mx-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
+                      <ChevronRight className="h-4 w-4 text-gray-300 mx-2" />
                     )}
                     <span
-                      className={`text-sm transition-colors duration-200 ${
+                      className={`text-sm transition-colors duration-200 cursor-pointer ${
                         index === breadcrumbs.length - 1
-                          ? "text-gray-900 font-medium"
-                          : "text-gray-500 hover:text-gray-700 cursor-pointer"
+                          ? "text-gray-900 font-semibold"
+                          : "text-gray-500 hover:text-gray-700"
                       }`}
                       onClick={() =>
                         index < breadcrumbs.length - 1 &&
@@ -366,7 +320,7 @@ export default function Sidebar({ children }: SidebarProps) {
             </nav>
           </div>
 
-          {/* Right side - could add notifications, etc */}
+          {/* Right side */}
           <div className="flex items-center space-x-4">
             {/* Add any top-right actions here */}
           </div>
