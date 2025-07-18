@@ -14,6 +14,7 @@ import {
   ChevronDown,
   User,
   LogOut,
+  AlignLeft,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -172,7 +173,7 @@ export default function Sidebar({ children }: SidebarProps) {
               className="hidden lg:block p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
               title="Hide sidebar"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 cursor-pointer" />
             </button>
 
             {/* Close button (mobile) */}
@@ -180,7 +181,7 @@ export default function Sidebar({ children }: SidebarProps) {
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 cursor-pointer" />
             </button>
           </div>
 
@@ -243,12 +244,13 @@ export default function Sidebar({ children }: SidebarProps) {
               </button>
 
               {/* Dropdown menu */}
+              {/* Dropdown menu */}
               {userDropdownOpen && (
                 <div className="absolute bottom-full mb-2 left-0 w-full rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200 origin-bottom border border-gray-100">
-                  <div className="py-2">
+                  <div className="py-1">
                     <button
                       onClick={handleProfile}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-200 rounded-lg mx-2"
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-200 first:rounded-t-xl last:rounded-b-xl"
                     >
                       <User className="w-4 h-4 text-gray-400" />
                       <span>Profile</span>
@@ -256,7 +258,7 @@ export default function Sidebar({ children }: SidebarProps) {
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-200 rounded-lg mx-2"
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors duration-200 first:rounded-t-xl last:rounded-b-xl"
                     >
                       <LogOut className="w-4 h-4 text-gray-400" />
                       <span>Logout</span>
@@ -289,7 +291,7 @@ export default function Sidebar({ children }: SidebarProps) {
                 className="hidden lg:block p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200"
                 title="Show sidebar"
               >
-                <ChevronRight className="h-5 w-5" />
+                <AlignLeft className="h-5 w-5 cursor-pointer" />
               </button>
             )}
 
@@ -299,7 +301,7 @@ export default function Sidebar({ children }: SidebarProps) {
                 {breadcrumbs.map((breadcrumb, index) => (
                   <li key={breadcrumb.href} className="flex items-center">
                     {index > 0 && (
-                      <ChevronRight className="h-4 w-4 text-gray-300 mx-2" />
+                      <ChevronRight className="h-4 w-4 text-gray-300 mx-2 cursor-pointer" />
                     )}
                     <span
                       className={`text-sm transition-colors duration-200 cursor-pointer ${

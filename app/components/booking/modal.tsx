@@ -86,7 +86,9 @@ export default function BookingModal({
       const booking = await response.json();
       console.log("✅ Booking created:", booking);
 
-      showSuccess(`Successfully booked ${ticketCount} ticket(s)!`);
+      showSuccess(
+        `Successfully booked ${ticketCount} ticket(s) from concert ${concert.name}!`
+      );
       onClose();
       setTicketCount(1); // Reset form
 

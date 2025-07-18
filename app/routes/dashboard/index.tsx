@@ -24,7 +24,7 @@ interface Concert {
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
+  const [refreshKey, setRefreshKey] = useState(0);
   // Modal state
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedConcert, setSelectedConcert] = useState<Concert | null>(null);
@@ -55,18 +55,25 @@ export default function Dashboard() {
     setIsBookingModalOpen(true);
   };
 
-  // ✅ NEW: Handle successful booking
   const handleBookingSuccess = () => {
-    // Refresh the concerts list or update UI
-    window.location.reload(); // Simple refresh for now
+    // Close modal first
+    setIsBookingModalOpen(false);
+    setSelectedConcert(null);
+
+    // Trigger re-render of ConcertsList component to refresh data
+    setRefreshKey((prev) => prev + 1);
+
+    // No immediate refresh - let the toast display naturally for its full 5 seconds
+    // The ConcertsList will re-render and fetch fresh data automatically
   };
 
   return (
     <div>
       <ConcertsList
+        key={refreshKey}
         onCreateConcert={handleCreateConcert}
         onEditConcert={handleEditConcert}
-        onBookConcert={handleBookConcert} // ✅ Pass the booking handler
+        onBookConcert={handleBookConcert}
       />
 
       {/* ✅ NEW: Booking Modal */}
