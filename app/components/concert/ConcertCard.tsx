@@ -82,8 +82,8 @@ export default function ConcertCard({
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 group">
       {/* Concert Image Placeholder */}
-      <div className="h-28 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/80 to-blue-600/80"></div>
+      <div className="h-28 bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/80 to-green-600/80"></div>
         <span className="text-5xl text-white relative z-10">🎵</span>
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
@@ -91,7 +91,7 @@ export default function ConcertCard({
       <div className="p-6">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+          <h3 className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-green-600 transition-colors duration-200">
             {concert.name}
           </h3>
           <span
@@ -153,7 +153,7 @@ export default function ConcertCard({
             <>
               <button
                 onClick={() => onEdit?.(concert)}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md"
+                className="flex-1 px-4 py-3 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md"
               >
                 <Edit3 className="w-4 h-4" />
                 <span>Edit</span>

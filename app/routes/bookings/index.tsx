@@ -162,7 +162,7 @@ export default function BookingsPage() {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-green-600">
                 {totalItems}
               </div>
               <div className="text-sm text-gray-600">Total Bookings</div>

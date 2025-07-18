@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Home } from "lucide-react";
+import { Eye, EyeOff, Home, Music2Icon, Music4Icon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../lib/AuthContext";
+
+// Import local images
+import slide1 from "../../assets/images/img1.jpg";
+import slide2 from "../../assets/images/img2.jpg";
+import slide3 from "../../assets/images/img3.jpg";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -17,11 +22,8 @@ export default function Login() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const images = [
-    "https://picsum.photos/800/1200?random=1",
-    "https://picsum.photos/800/1200?random=2",
-    "https://picsum.photos/800/1200?random=3",
-  ];
+  // Use local images instead of random URLs
+  const images = [slide1, slide2, slide3];
 
   // Real authentication hooks
   const { login, isAuthenticated, isLoading, isLoggingIn, error, clearError } =
@@ -176,7 +178,7 @@ export default function Login() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           <p className="text-gray-600">{loadingMessage}</p>
         </div>
       </div>
@@ -188,7 +190,7 @@ export default function Login() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           <p className="text-gray-600">Redirecting to dashboard...</p>
         </div>
       </div>
@@ -198,7 +200,7 @@ export default function Login() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left side - Image slideshow */}
-      <div className="hidden lg:block relative bg-gradient-to-br from-blue-400 to-blue-600">
+      <div className="hidden lg:block relative bg-gradient-to-br from-green-400 to-green-600">
         {images.map((image, index) => (
           <div
             key={index}
@@ -211,38 +213,28 @@ export default function Login() {
           />
         ))}
 
-        {/* Subtle overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-gray-600/20" />
+        {/* Darker overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/50 to-black/40" />
 
         {/* Logo */}
         <div className="absolute top-8 left-8 flex items-center space-x-2 text-white">
           <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-            <Home className="w-5 h-5 text-blue-600" />
+            <Music4Icon className="w-5 h-5 text-green-600" />
           </div>
           <div>
-            <div className="font-bold text-lg">American</div>
-            <div className="text-sm">Realtor</div>
+            <div className="font-bold text-lg">GrooveGate</div>
+            <div className="text-sm">@Wonderful Indonesia</div>
           </div>
         </div>
 
         {/* Bottom text */}
         <div className="absolute bottom-12 left-8 text-white">
-          <h1 className="text-4xl font-bold mb-2">Find Your Sweet Home</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            Feel the Beat. Book Your Seat.
+          </h1>
           <p className="text-lg opacity-90">
-            Schedule visit just a few clicks, visit in just a few clicks
+            Your favorite concerts are just a click away
           </p>
-        </div>
-
-        {/* Dots indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {images.map((_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white" : "bg-white/50"
-              }`}
-            />
-          ))}
         </div>
       </div>
 
@@ -251,16 +243,14 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* Mobile logo (shown only on small screens) */}
           <div className="lg:hidden flex items-center justify-center space-x-2 mb-8">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
               <Home className="w-5 h-5 text-white" />
             </div>
-            <div className="text-blue-600">
-              <div className="font-bold text-lg">American</div>
-              <div className="text-sm">Realtor</div>
+            <div className="text-green-600">
+              <div className="font-bold text-lg">GrooveGate</div>
+              <div className="text-sm">@Wonderful Indonesia</div>
             </div>
           </div>
-
-          {/* Sign In button (top right) */}
 
           {/* Welcome text */}
           <div className="text-center lg:text-left mb-8">
@@ -268,14 +258,14 @@ export default function Login() {
               Welcome Back to
             </h2>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              American Realtors!
+              GrooveGate!
             </h1>
             <p className="text-gray-600">
               Don't have an account?{" "}
               <button
                 onClick={handleRegisterClick}
                 disabled={isNavigating}
-                className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="font-medium text-green-600 hover:text-green-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isNavigating ? "Loading..." : "Register"}
               </button>
@@ -327,7 +317,7 @@ export default function Login() {
                 disabled={isSubmitting || isLoggingIn}
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Enter your email"
               />
             </div>
@@ -349,7 +339,7 @@ export default function Login() {
                   disabled={isSubmitting || isLoggingIn}
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent pr-10 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="Enter your password"
                 />
                 <button
@@ -371,7 +361,7 @@ export default function Login() {
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                   disabled={isSubmitting || isLoggingIn}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <label
                   htmlFor="remember"
@@ -383,7 +373,7 @@ export default function Login() {
               <button
                 type="button"
                 disabled={isSubmitting || isLoggingIn}
-                className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Forgot Password?
               </button>
@@ -428,45 +418,6 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          {/* Test data helper (uncomment for development) */}
-          {/* <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-500">
-              <strong>Need to test?</strong>
-            </p>
-            <p className="text-xs text-gray-400">
-              First register a new account, then login with those credentials
-            </p>
-            <div className="flex space-x-2 justify-center">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log("🧪 Filling test data");
-                  setFormData({
-                    email: "test@example.com",
-                    password: "password123",
-                  });
-                  clearAllErrors();
-                }}
-                className="text-xs text-blue-600 hover:text-blue-500 underline"
-              >
-                Fill test email
-              </button>
-              <span className="text-xs text-gray-300">|</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log("🧹 Clearing errors");
-                  clearAllErrors();
-                }}
-                className="text-xs text-gray-500 hover:text-gray-700 underline"
-              >
-                Clear errors
-              </button>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>

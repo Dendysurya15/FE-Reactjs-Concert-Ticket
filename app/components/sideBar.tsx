@@ -15,6 +15,7 @@ import {
   User,
   LogOut,
   AlignLeft,
+  Music4Icon,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -150,8 +151,8 @@ export default function Sidebar({ children }: SidebarProps) {
           {/* Sidebar header */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-100 bg-white">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
-                <Home className="w-4 h-4 text-white" />
+              <div className="h-8 w-8 bg-green-600 rounded-full flex items-center justify-center shadow-md">
+                <Music4Icon className="w-4 h-4 text-white" />
               </div>
               <div
                 className={`transition-all duration-300 overflow-hidden ${
@@ -159,10 +160,10 @@ export default function Sidebar({ children }: SidebarProps) {
                 }`}
               >
                 <h2 className="text-lg font-bold text-gray-900 whitespace-nowrap">
-                  American
+                  GrooveGate
                 </h2>
                 <p className="text-xs text-gray-500 whitespace-nowrap -mt-1">
-                  Realtor {user.role === "admin" ? "Admin" : ""}
+                  {user.role === "admin" ? "Admin" : ""}
                 </p>
               </div>
             </div>
@@ -198,14 +199,14 @@ export default function Sidebar({ children }: SidebarProps) {
                   }}
                   className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
                     isCurrentPath(item.href)
-                      ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100"
+                      ? "bg-green-50 text-green-700 shadow-sm border border-green-100"
                       : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   <IconComponent
                     className={`w-5 h-5 mr-3 transition-colors duration-200 ${
                       isCurrentPath(item.href)
-                        ? "text-blue-700"
+                        ? "text-green-700"
                         : "text-gray-400 group-hover:text-gray-600"
                     }`}
                   />
@@ -220,10 +221,10 @@ export default function Sidebar({ children }: SidebarProps) {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="w-full flex items-center space-x-3 p-3 text-sm rounded-xl hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 border border-transparent hover:border-gray-100"
+                className="w-full flex items-center space-x-3 p-3 text-sm rounded-xl hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 border border-transparent hover:border-gray-100"
               >
                 {/* User avatar */}
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 shadow-md">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 shadow-md">
                   {getUserInitials(user.name)}
                 </div>
 
