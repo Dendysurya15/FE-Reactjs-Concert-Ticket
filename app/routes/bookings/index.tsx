@@ -4,13 +4,14 @@ import { useAuth } from "../../lib/AuthContext";
 import { useToast } from "../../lib/ToastContext";
 import BookingsTable from "../../components/booking/table";
 
+// Update your interface in routes/dashboard/bookings.tsx
 interface Booking {
   id: number;
   user_id: number;
   concert_id: number;
   ticket_count: number;
   total_price: number;
-  status: number;
+  status: string;
   status_text: string;
   booking_date: string;
   created_at: string;
@@ -22,10 +23,16 @@ interface Booking {
   };
   concert?: {
     id: number;
-    title: string;
-    artist: string;
-    date: string;
-    venue: string;
+    name: string; // ← Changed from "title" to "name"
+    description: string;
+    price: number;
+    place: string; // ← Changed from "venue" to "place"
+    seat_count: number;
+    seat_booked: number;
+    discount: number;
+    event_date: string; // ← Changed from "date" to "event_date"
+    event_end: string;
+    status: string;
   };
 }
 

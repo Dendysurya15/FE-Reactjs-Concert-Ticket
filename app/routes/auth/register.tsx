@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../lib/AuthContext";
 import { useToast } from "../../lib/ToastContext";
-import { Eye, EyeOff, Home, User, Mail, Calendar, Lock } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Home,
+  User,
+  Mail,
+  Calendar,
+  Lock,
+  Music4Icon,
+} from "lucide-react";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -135,7 +144,7 @@ export default function Register() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -147,12 +156,12 @@ export default function Register() {
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="flex items-center justify-center space-x-2">
-          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-            <Home className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+            <Music4Icon className="w-6 h-6 text-white" />
           </div>
-          <div className="text-blue-600">
-            <div className="font-bold text-xl">American</div>
-            <div className="text-sm -mt-1">Realtor</div>
+          <div className="text-green-600">
+            <div className="font-bold text-xl">GrooveGate</div>
+            <div className="text-sm -mt-1">@Wonderful Indonesia</div>
           </div>
         </div>
 
@@ -168,7 +177,7 @@ export default function Register() {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              className="font-medium text-green-600 hover:text-green-500 transition-colors"
             >
               Sign in here
             </Link>
@@ -222,7 +231,7 @@ export default function Register() {
                 type="text"
                 required
                 disabled={isSubmitting}
-                className={`w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                   validationErrors.name
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300"
@@ -258,7 +267,7 @@ export default function Register() {
                 autoComplete="email"
                 required
                 disabled={isSubmitting}
-                className={`w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                   validationErrors.email
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300"
@@ -295,7 +304,7 @@ export default function Register() {
                 max="120"
                 required
                 disabled={isSubmitting}
-                className={`w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                   validationErrors.age
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300"
@@ -330,7 +339,7 @@ export default function Register() {
                 type={showPassword ? "text" : "password"}
                 required
                 disabled={isSubmitting}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                   validationErrors.password
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300"
@@ -373,7 +382,7 @@ export default function Register() {
                 type={showConfirmPassword ? "text" : "password"}
                 required
                 disabled={isSubmitting}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                   validationErrors.confirmPassword
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300"
@@ -438,11 +447,11 @@ export default function Register() {
         <div className="text-center">
           <p className="text-xs text-gray-500">
             By creating an account, you agree to our{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-500">
+            <a href="#" className="text-green-600 hover:text-green-500">
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-500">
+            <a href="#" className="text-green-600 hover:text-green-500">
               Privacy Policy
             </a>
           </p>

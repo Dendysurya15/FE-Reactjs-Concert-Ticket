@@ -7,7 +7,7 @@ interface Booking {
   concert_id: number;
   ticket_count: number;
   total_price: number;
-  status: number;
+  status: string;
   status_text: string;
   booking_date: string;
   created_at: string;
@@ -19,10 +19,16 @@ interface Booking {
   };
   concert?: {
     id: number;
-    title: string;
-    artist: string;
-    date: string;
-    venue: string;
+    name: string; // ← Changed from "title" to "name"
+    description: string;
+    price: number;
+    place: string; // ← Changed from "venue" to "place"
+    seat_count: number;
+    seat_booked: number;
+    discount: number;
+    event_date: string; // ← Changed from "date" to "event_date"
+    event_end: string;
+    status: string;
   };
 }
 
@@ -69,6 +75,8 @@ const BookingsTable: React.FC<BookingsTableProps> = ({
         return "bg-red-100 text-red-800";
       case "completed":
         return "bg-blue-100 text-blue-800";
+      case "sold_out":
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -115,6 +123,9 @@ const BookingsTable: React.FC<BookingsTableProps> = ({
                 Tickets
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total Price
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Booking Date
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -125,7 +136,7 @@ const BookingsTable: React.FC<BookingsTableProps> = ({
           <tbody className="bg-white divide-y divide-gray-200">
             {bookings.map((booking) => (
               <tr key={booking.id} className="hover:bg-gray-50">
-                {/* ✅ FIXED: Show USER NAME in User Name column */}
+                {/* ✅ FIXED: Show USER NAME */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
                     {booking.user?.name || `User ${booking.user_id}`}
@@ -135,22 +146,32 @@ const BookingsTable: React.FC<BookingsTableProps> = ({
                   </div>
                 </td>
 
-                {/* ✅ FIXED: Show CONCERT INFO in Concert column */}
+                {/* ✅ FIXED: Show CONCERT NAME (not title) */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {booking.concert?.title || `Concert ${booking.concert_id}`}
+                    {booking.concert?.name || `Concert ${booking.concert_id}`}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {booking.concert?.artist}
+                    {booking.concert?.place}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {booking.concert?.event_date &&
+                      formatDate(booking.concert.event_date)}
                   </div>
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {booking.ticket_count} tickets
                 </td>
+
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  Rp {booking.total_price.toLocaleString("id-ID")}
+                </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {formatDate(booking.booking_date)}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
